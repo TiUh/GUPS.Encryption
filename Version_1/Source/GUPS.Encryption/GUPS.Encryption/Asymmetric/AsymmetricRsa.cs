@@ -12,7 +12,7 @@ namespace GUPS.Encryption.Asymmetric
         /// <summary>
         /// The rsa algorithm used for encryption and decryption and signing and verification.
         /// </summary>
-        private RSA rsa;
+        private RSACng rsa;
 
         /// <summary>
         /// Initializes a new instance of the RSAEncryption class with a new RSA key pair (RSA-512, RSA-1024, RSA-2048, RSA-4096, ...).
@@ -21,39 +21,37 @@ namespace GUPS.Encryption.Asymmetric
         public AsymmetricRsa(int _KeySize)
         {
             // Init the rsa algorithm with the key size.
-            this.rsa = RSA.Create();
-            this.rsa.KeySize = _KeySize;
+            this.rsa = new RSACng(_KeySize);
         }
 
         /// <summary>
         /// Initializes a new instance of the RSAEncryption class with the key xml.
         /// </summary>
         /// <param name="_KeySize">The key size RSA-512, RSA-1024, RSA-2048, RSA-4096, ...</param>
-        /// <param name="_KeyXml">The key xml used for encryption/decryption and signing/verification.</param>
-        public AsymmetricRsa(int _KeySize, String _KeyXml)
+        /// <param name="_KeyType">The type of the key, public or private.</param>
+        /// <param name="_KeyBlob">The key as blob.</param>
+        public AsymmetricRsa(int _KeySize, EKeyType _KeyType, byte[] _KeyBlob)
         {
             // Initialize the rsa algorithm with the key xml.
-            this.rsa = RSA.Create();
-            this.rsa.KeySize = _KeySize;
-            this.rsa.FromXmlString(_KeyXml);
+            this.rsa = new RSACng(CngKey.Import(_KeyBlob, _KeyType == EKeyType.PUBLIC ? CngKeyBlobFormat.GenericPublicBlob : CngKeyBlobFormat.GenericPrivateBlob));
         }
 
         /// <summary>
         /// Returns the public key used for encryption and verification.
         /// </summary>
-        /// <returns>The public key as XML string.</returns>
-        public string GetPublicKey()
+        /// <returns>The public key as byte blob.</returns>
+        public byte[] GetPublicKey()
         {
-            return this.rsa.ToXmlString(false);
+            return this.rsa.Key.Export(CngKeyBlobFormat.GenericPublicBlob);
         }
 
         /// <summary>
         /// Returns the private key used for decryption and signing.
         /// </summary>
-        /// <returns>The private key as a XML string.</returns>
-        public string GetPrivateKey()
+        /// <returns>The private key as byte blob.</returns>
+        public byte[] GetPrivateKey()
         {
-            return this.rsa.ToXmlString(true);
+            return this.rsa.Key.Export(CngKeyBlobFormat.GenericPrivateBlob);
         }
 
         /// <summary>

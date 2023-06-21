@@ -21,13 +21,13 @@ namespace GUPS.Encryption.Tests
             var privateKey = asymmetric.GetPrivateKey();
 
             // Init Encryptor
-            var encryptor = new Asymmetric.AsymmetricRsa(2048, publicKey);
+            var encryptor = new Asymmetric.AsymmetricRsa(2048, Asymmetric.EKeyType.PUBLIC, publicKey);
 
             var data = new byte[] { 0x01, 0x02, 0x03, 0x04 };
             var encryptedData = encryptor.Encrypt(data);
 
             // Init Decryptor
-            var decryptor = new Asymmetric.AsymmetricRsa(2048, privateKey);
+            var decryptor = new Asymmetric.AsymmetricRsa(2048, Asymmetric.EKeyType.PRIVATE, privateKey);
 
             var decryptedData = decryptor.Decrypt(encryptedData);
 
@@ -156,14 +156,14 @@ namespace GUPS.Encryption.Tests
             var privateKey = asymmetric.GetPrivateKey();
 
             // Init Sign
-            var signer = new Asymmetric.AsymmetricDsa(2048, privateKey);
+            var signer = new Asymmetric.AsymmetricDsa(2048, Asymmetric.EKeyType.PRIVATE, privateKey);
 
             var data = new byte[] { 0x01, 0x02, 0x03, 0x04 };
 
             var signature = signer.Sign(data);
 
             // Init Verify
-            var validator = new Asymmetric.AsymmetricDsa(2048, publicKey);
+            var validator = new Asymmetric.AsymmetricDsa(2048, Asymmetric.EKeyType.PUBLIC, publicKey);
 
             var verified = validator.Verify(data, signature);
 

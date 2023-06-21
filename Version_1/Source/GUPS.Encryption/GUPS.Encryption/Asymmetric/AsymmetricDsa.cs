@@ -12,7 +12,7 @@ namespace GUPS.Encryption.Asymmetric
         /// <summary>
         /// The dsa algorithm used for encryption and decryption and signing and verification.
         /// </summary>
-        private DSA dsa;
+        private DSACng dsa;
 
         /// <summary>
         /// Initializes a new instance of the DSAEncryption class with a new DSA key pair (DSA-512, DSA-1024, DSA-2048, DSA-3072).
@@ -21,39 +21,37 @@ namespace GUPS.Encryption.Asymmetric
         public AsymmetricDsa(int _KeySize)
         {
             // Init the dsa algorithm with the key size.
-            this.dsa = DSA.Create();
-            this.dsa.KeySize = _KeySize;
+            this.dsa = new DSACng(_KeySize);
         }
 
         /// <summary>
         /// Initializes a new instance of the DSAEncryption class with the key xml.
         /// </summary>
         /// <param name="_KeySize">The key size DSA-512, DSA-1024, DSA-2048, DSA-3072</param>
-        /// <param name="_KeyXml">The key xml used for encryption/decryption and signing/verification.</param>
-        public AsymmetricDsa(int _KeySize, String _KeyXml)
+        /// <param name="_KeyType">The type of the key, public or private.</param>
+        /// <param name="_KeyBlob">The key as blob.</param>
+        public AsymmetricDsa(int _KeySize, EKeyType _KeyType, byte[] _KeyBlob)
         {
             // Initialize the dsa algorithm with the key xml.
-            this.dsa = DSA.Create();
-            this.dsa.KeySize = _KeySize;
-            this.dsa.FromXmlString(_KeyXml);
+            this.dsa = new DSACng(CngKey.Import(_KeyBlob, _KeyType == EKeyType.PUBLIC ? CngKeyBlobFormat.GenericPublicBlob : CngKeyBlobFormat.GenericPrivateBlob));
         }
 
         /// <summary>
         /// Returns the public key used for encryption and verification.
         /// </summary>
-        /// <returns>The public key as XML string.</returns>
-        public string GetPublicKey()
+        /// <returns>The public key as byte blob.</returns>
+        public byte[] GetPublicKey()
         {
-            return this.dsa.ToXmlString(false);
+            return this.dsa.Key.Export(CngKeyBlobFormat.GenericPublicBlob);
         }
 
         /// <summary>
         /// Returns the private key used for decryption and signing.
         /// </summary>
-        /// <returns>The private key as a XML string.</returns>
-        public string GetPrivateKey()
+        /// <returns>The private key as byte blob.</returns>
+        public byte[] GetPrivateKey()
         {
-            return this.dsa.ToXmlString(true);
+            return this.dsa.Key.Export(CngKeyBlobFormat.GenericPrivateBlob);
         }
 
         /// <summary>

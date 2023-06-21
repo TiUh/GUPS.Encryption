@@ -12,7 +12,7 @@ namespace GUPS.Encryption.Asymmetric
         /// <summary>
         /// The ec algorithm used for encryption and decryption and signing and verification.
         /// </summary>
-        private ECDsa ec;
+        private ECDsaCng ec;
 
         /// <summary>
         /// Initializes a new instance of the AsymmetricEC class with a new EC key pair (EC-256, EC-384, EC-521).
@@ -21,39 +21,39 @@ namespace GUPS.Encryption.Asymmetric
         public AsymmetricECDsa(int _KeySize)
         {
             // Init the ec algorithm with the key size.
-            this.ec = ECDsa.Create();
-            this.ec.KeySize = _KeySize;
+            this.ec = new ECDsaCng(_KeySize);
+
+            // TODO: new ECDiffieHellmanCng(CngKey.Create(CngAlgorithm.ECDiffieHellmanP256, null, new CngKeyCreationParameters {ExportPolicy = CngExportPolicies.AllowPlaintextExport}));
         }
 
         /// <summary>
         /// Initializes a new instance of the AsymmetricEC class with the key xml.
         /// </summary>
         /// <param name="_KeySize">The key size EC-256, EC-384, EC-521.</param>
-        /// <param name="_KeyXml">The key xml used for encryption/decryption and signing/verification.</param>
-        public AsymmetricECDsa(int _KeySize, String _KeyXml)
+        /// <param name="_KeyType">The type of the key, public or private.</param>
+        /// <param name="_KeyBlob">The key as blob.</param>
+        public AsymmetricECDsa(int _KeySize, EKeyType _KeyType, byte[] _KeyBlob)
         {
             // Initialize the ec algorithm with the key xml.
-            this.ec = ECDsa.Create();
-            this.ec.KeySize = _KeySize;
-            this.ec.FromXmlString(_KeyXml);
+            this.ec = new ECDsaCng(CngKey.Import(_KeyBlob, _KeyType == EKeyType.PUBLIC ? CngKeyBlobFormat.EccPublicBlob : CngKeyBlobFormat.EccPrivateBlob));
         }
 
         /// <summary>
         /// Returns the public key used for encryption and verification.
         /// </summary>
-        /// <returns>The public key as XML string.</returns>
-        public string GetPublicKey()
+        /// <returns>The public key as byte blob.</returns>
+        public byte[] GetPublicKey()
         {
-            throw new NotImplementedException();
+            return this.ec.Key.Export(CngKeyBlobFormat.EccPublicBlob);
         }
 
         /// <summary>
         /// Returns the private key used for decryption and signing.
         /// </summary>
-        /// <returns>The private key as a XML string.</returns>
-        public string GetPrivateKey()
+        /// <returns>The private key as byte blob.</returns>
+        public byte[] GetPrivateKey()
         {
-            throw new NotImplementedException();
+            return this.ec.Key.Export(CngKeyBlobFormat.EccPrivateBlob);
         }
 
         /// <summary>

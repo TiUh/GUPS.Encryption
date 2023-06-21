@@ -8,14 +8,14 @@
         /// <summary>
         /// Returns the public key used for encryption and verification.
         /// </summary>
-        /// <returns>The public key as XML string.</returns>
-        string GetPublicKey();
+        /// <returns>The public key as blob.</returns>
+        byte[] GetPublicKey();
 
         /// <summary>
         /// Returns the private key used for decryption and signing.
         /// </summary>
-        /// <returns>The private key as a XML string.</returns>
-        string GetPrivateKey();
+        /// <returns>The private key as blob.</returns>
+        byte[] GetPrivateKey();
 
         /// <summary>
         /// Encrypts the data using the public key.

@@ -46,6 +46,7 @@
     <Compile Include="Asymmetric\AsymmetricDsa.cs" />
     <Compile Include="Asymmetric\AsymmetricECDsa.cs" />
     <Compile Include="Asymmetric\AsymmetricRsa.cs" />
+    <Compile Include="Asymmetric\EKeyType.cs" />
     <Compile Include="Asymmetric\IAsymmetric.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Symmetric\ISymmetric.cs" />
